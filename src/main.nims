@@ -6,7 +6,7 @@ var useMimalloc = defined(mimalloc) or defined(mimallocDynamic)
 #useMimalloc = true
 
 if useMimalloc:
-  switch("mm", "orc")
+  switch("mm", "orc") # arc
   switch("define", "useMalloc")
 
   when not defined(mimallocDynamic):
@@ -20,14 +20,6 @@ if useMimalloc:
     # So we can compile mimalloc from the patched files
     switch("define", mimallocStatic)
     switch("define", mimallocIncludePath)
-
-  # Not sure if we really need those or not, but Mimalloc uses them
-  case get("cc")
-  of "gcc", "clang", "icc", "icl":
-    # todo: with musl use local-dynamic for the static build
-    switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
-  else:
-    discard
 
   {.hint: "Patching malloc.nim to use mimalloc".}
   patchFile("stdlib", "malloc", "patchedstd/mimalloc")

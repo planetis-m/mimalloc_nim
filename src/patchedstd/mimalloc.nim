@@ -8,11 +8,14 @@ when defined(vcc):
   {.passL: "psapi.lib advapi32.lib bcrypt.lib".} # shell32.lib user32.lib
 else:
   # Generic GCC-like arguments
-  {.passC: "-DNDEBUG -Wno-unknown-pragmas -fvisibility=hidden".}
+  {.passC: "-DNDEBUG -fvisibility=hidden".}
   when not defined(cpp):
     {.passC: "-Wstrict-prototypes".}
+  when defined(gcc) or defined(clang):
+    {.passC: "-Wno-unknown-pragmas".}
   when defined(clang):
     {.passC: "-Wno-static-in-inline".}
+  {.passC: "-ftls-model=initial-exec -fno-builtin-malloc".}
   when defined(windows):
     {.passL: "-lpsapi -ladvapi32 -lbcrypt".} # -lshell32 -luser32
   else:
