@@ -30,7 +30,7 @@ proc editConstants(dir: string) =
 
 before install:
   # Works with atlas
-  editConstants(thisDir().quoteShell / "src")
+  editConstants(quoteShell(thisDir() / "src"))
 
 after install:
   # Fails with atlas
