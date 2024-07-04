@@ -1,17 +1,22 @@
 # todo: include "sanitizer/asan_interface.h" for ASan support
-# set appropriate flags: MI_TRACK_ASAN, and MI_DEBUG_TSAN (clang only)
-when not defined(vcc):
-  # Generic GCC-like arguments
-  {.passC: "-DNDEBUG -fvisibility=hidden".}
-  # shell32 user32 aren't needed for static linking from my testing
-  when defined(windows):
-    {.passL: "-lpsapi -lshell32 -luser32 -ladvapi32 -lbcrypt".}
-  else:
-    {.passL: "-pthread -lrt -latomic".}
-else:
+# set appropriate flags: MI_LIBC_MUSL, MI_TRACK_ASAN, and MI_DEBUG_TSAN (clang only)
+
+# shell32 user32 aren't needed for static linking from my testing
+when defined(vcc):
   # Specifically for VCC which has different syntax
   {.passC: "/DNDEBUG".}
-  {.passL: "psapi.lib shell32.lib user32.lib advapi32.lib bcrypt.lib".}
+  {.passL: "psapi.lib advapi32.lib bcrypt.lib".} # shell32.lib user32.lib
+else:
+  # Generic GCC-like arguments
+  {.passC: "-DNDEBUG -Wno-unknown-pragmas -fvisibility=hidden".}
+  when not defined(cpp):
+    {.passC: "-Wstrict-prototypes".}
+  when defined(clang):
+    {.passC: "-Wno-static-in-inline".}
+  when defined(windows):
+    {.passL: "-lpsapi -ladvapi32 -lbcrypt".} # -lshell32 -luser32
+  else:
+    {.passL: "-pthread -lrt -latomic".}
 
 when defined(mimallocDynamic):
   {.passL: "-lmimalloc".}
