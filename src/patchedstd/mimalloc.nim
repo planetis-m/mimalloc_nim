@@ -53,10 +53,10 @@ proc reallocImpl(p: pointer, newSize: Natural): pointer =
     if result == nil:
       raiseOutOfMem()
 
-proc realloc0Impl(p: pointer, oldsize, newSize: Natural): pointer =
+proc realloc0Impl(p: pointer, oldSize, newSize: Natural): pointer =
   result = realloc(p, newSize.csize_t)
   if newSize > oldSize:
-    zeroMem(cast[pointer](cast[int](result) + oldSize), newSize - oldSize)
+    zeroMem(cast[pointer](cast[uint](result) + uint(oldSize)), newSize - oldSize)
 
 proc deallocImpl(p: pointer) =
   mi_free(p)
@@ -73,7 +73,7 @@ proc allocShared0Impl(size: Natural): pointer =
 proc reallocSharedImpl(p: pointer, newSize: Natural): pointer =
   reallocImpl(p, newSize)
 
-proc reallocShared0Impl(p: pointer, oldsize, newSize: Natural): pointer =
+proc reallocShared0Impl(p: pointer, oldSize, newSize: Natural): pointer =
   realloc0Impl(p, oldSize, newSize)
 
 proc deallocSharedImpl(p: pointer) = deallocImpl(p)
@@ -102,8 +102,8 @@ proc initGC() = discard
 proc newObjNoInit(typ: PNimType, size: int): pointer =
   result = alloc(size)
 
-proc growObj(old: pointer, newsize: int): pointer =
-  result = realloc(old, newsize)
+proc growObj(old: pointer, newSize: int): pointer =
+  result = realloc(old, newSize)
 
 proc nimGCref(p: pointer) {.compilerproc, inline.} = discard
 proc nimGCunref(p: pointer) {.compilerproc, inline.} = discard
