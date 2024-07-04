@@ -28,9 +28,9 @@ proc editConstants(dir: string) =
       content.insert(dir, first + len(name) + len(" = r\""))
     writeFile(filename, content)
 
-before install:
-  # Works with atlas
-  editConstants(quoteShell(thisDir() / "src"))
+# before install:
+#   # Works with atlas
+#   editConstants(thisDir().quoteShell / "src")
 
 after install:
   # Fails with atlas
