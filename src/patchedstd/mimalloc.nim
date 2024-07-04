@@ -36,7 +36,6 @@ else:
       c
 
   {.passC: "-I" & mimallocIncludePath.}
-  {.passL: "-I" & mimallocIncludePath.}
   {.compile: mimallocStaticNoQuote.}
 
 {.push stackTrace: off.}
