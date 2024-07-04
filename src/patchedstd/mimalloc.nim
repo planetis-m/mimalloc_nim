@@ -15,6 +15,7 @@ else:
     {.passC: "-Wno-unknown-pragmas".}
   when defined(clang):
     {.passC: "-Wno-static-in-inline".}
+  # Not sure if we really need those or not, but Mimalloc uses them
   {.passC: "-ftls-model=initial-exec -fno-builtin-malloc".}
   when defined(windows):
     {.passL: "-lpsapi -ladvapi32 -lbcrypt".} # -lshell32 -luser32
