@@ -1,4 +1,4 @@
-# todo: include "sanitizer/asan_interface.h" for ASan support
+# TODO: include "sanitizer/asan_interface.h" for ASan support
 # set appropriate flags: MI_LIBC_MUSL, MI_TRACK_ASAN, and MI_DEBUG_TSAN (clang only)
 
 # shell32 user32 aren't needed for static linking from my testing

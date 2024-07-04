@@ -1,4 +1,4 @@
-import std/[os, strutils]
+import std/os
 
 var useMimalloc = defined(mimalloc) or defined(mimallocDynamic)
 
@@ -11,9 +11,8 @@ if useMimalloc:
 
   when not defined(mimallocDynamic):
     let
-      mimallocPath = projectDir() / "mimalloc" 
-      # Quote the paths so we support paths with spaces
-      # TODO: Is there a better way of doing this?
+      mimallocPath = projectDir().quoteShell / "mimalloc"
+      # There's no better way of doing this.
       mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src/static.c") & '"'
       mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
 

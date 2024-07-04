@@ -12,14 +12,13 @@ proc make(depth: int): Node =
     let d = depth - 1
     Node(left: make(d), right: make(d))
 
-
 proc check(node: Node): int =
   if node.left != nil and node.right != nil:
     1 + node.left.check + node.right.check
   else:
     1
 
-proc main = 
+proc main =
   const MIN_DEPTH = 4
   var max_depth = if paramCount() > 0: parseInt(paramStr(1)) else: 6
   if MIN_DEPTH + 2 > max_depth:
