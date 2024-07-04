@@ -3,12 +3,13 @@ when not defined(vcc):
   {.passC: "-DNDEBUG -fvisibility=hidden".}
   # shell32 user32 aren't needed for static linking from my testing
   when defined(windows):
-    {.passL: "-lpsapi -lbcrypt -ladvapi32".}
+    {.passL: "-lpsapi -lshell32 -luser32 -ladvapi32 -lbcrypt".}
+  else:
+    {.passL: "-pthread -lrt -latomic".}
 else:
   # Specifically for VCC which has different syntax
   {.passC: "/DNDEBUG".}
-  {.passL: "psapi.lib bcrypt.lib advapi32.lib".}
-  
+  {.passL: "psapi.lib shell32.lib user32.lib advapi32.lib bcrypt.lib".}
 
 when defined(mimallocDynamic):
   {.passL: "-lmimalloc".}
