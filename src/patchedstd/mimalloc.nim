@@ -1,3 +1,5 @@
+# todo: include "sanitizer/asan_interface.h" for ASan support
+# set appropriate flags: MI_TRACK_ASAN, and MI_DEBUG_TSAN (clang only)
 when not defined(vcc):
   # Generic GCC-like arguments
   {.passC: "-DNDEBUG -fvisibility=hidden".}
