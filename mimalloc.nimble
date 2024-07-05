@@ -18,6 +18,7 @@ task benchmark, "Run the benchmark":
 
 from std/os import `/`, quoteShell
 from std/strutils import find
+import std/compilesettings
 
 proc editConstants(dir: string) =
   withDir(dir):
@@ -33,5 +34,9 @@ proc editConstants(dir: string) =
 #   editConstants(thisDir().quoteShell / "src")
 
 after install:
-  # Fails with atlas
+  # Change the constants
   editConstants(thisDir().quoteShell)
+  # Copy mimalloc.nim to the stdlib
+  let stdlibDir = querySetting(libPath)
+  mkDir(stdlibDir / "patchedstd")
+  cpFile("patchedstd/mimalloc.nim", stdlibDir / "patchedstd/mimalloc.nim")
