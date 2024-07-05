@@ -37,11 +37,11 @@ proc editConstants(dir: string) =
       content.insert(dir, first + len(name) + len(" = r\""))
     writeFile(filename, content)
 
-# task localInstall, "Install on your local workspace":
-#   # Works with atlas
-#   let dir = thisDir().quoteShell / "src"
-#   editConstants(dir)
-#   editConfig(dir)
+task localInstall, "Install on your local workspace":
+  # Works with atlas
+  let dir = thisDir().quoteShell / "src"
+  editConstants(dir)
+  editConfig(dir)
 
 after install:
   let dir = thisDir().quoteShell
