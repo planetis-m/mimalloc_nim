@@ -23,7 +23,7 @@ if useMimalloc:
   switch("mm", "orc") # arc
   switch("define", "useMalloc")
   {.hint: "Patching malloc.nim to use mimalloc".}
-  patchFile("stdlib", "malloc", "patchedstd/mimalloc")
+  patchFile("stdlib", "malloc", "$lib/patchedstd/mimalloc")
 ```
 
 Then, compile your project with the `-d:mimalloc` flag:
