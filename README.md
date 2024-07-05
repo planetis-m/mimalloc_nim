@@ -1,4 +1,4 @@
-# mimalloc: A drop-in solution to use mimalloc in Nim
+# mimalloc-nim
 
 This package provides an easy way to use mimalloc for Nim with ARC/ORC. It includes the necessary configuration and setup to integrate mimalloc into your Nim projects.
 

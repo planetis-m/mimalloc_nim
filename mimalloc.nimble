@@ -48,5 +48,5 @@ task localInstall, "Install on your local workspace":
 
 task benchmark, "Run the benchmark":
   localInstallTask()
-  exec "nim c -d:release -d:danger --mm:orc -d:mimalloc benchmark/main.nim"
+  exec "nim c -d:release -d:danger --mm:orc -d:useMimalloc benchmark/main.nim"
   exec "./benchmark/main 18"
