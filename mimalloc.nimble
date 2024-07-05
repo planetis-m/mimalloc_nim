@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.0"
+version       = "0.3.0"
 author        = "Antonis Geralis"
 description   = "A drop-in solution to use mimalloc in Nim"
 license       = "MIT"
@@ -18,12 +18,15 @@ task benchmark, "Run the benchmark":
 
 from std/os import `/`, quoteShell
 from std/strutils import find
-import std/compilesettings
 
-proc copyMimallocToStdlib() =
-  let stdlibDir = querySetting(libPath)
-  mkDir(stdlibDir / "patchedstd")
-  cpFile("patchedstd/mimalloc.nim", stdlibDir / "patchedstd/mimalloc.nim")
+proc editConfig(dir: string) =
+  withDir(dir):
+    let filename = "mimalloc/config.nim"
+    var content = readFile(filename)
+    let name = "patchFile(\"stdlib\", \"malloc\","
+    let first = find(content, name)
+    content.insert(dir, first + len(name) + len(" r\""))
+    writeFile(filename, content)
 
 proc editConstants(dir: string) =
   withDir(dir):
@@ -36,11 +39,13 @@ proc editConstants(dir: string) =
 
 # task localInstall, "Install on your local workspace":
 #   # Works with atlas
-#   editConstants(thisDir().quoteShell / "src")
-#   copyMimallocToStdlib()
+#   let dir = thisDir().quoteShell / "src"
+#   editConstants(dir)
+#   editConfig(dir)
 
 after install:
+  let dir = thisDir().quoteShell
   # Change the constants
-  editConstants(thisDir().quoteShell)
-  # Copy mimalloc.nim to the stdlib
-  copyMimallocToStdlib()
+  editConstants(dir)
+  # Edit mimalloc/config
+  editConfig(dir)
