@@ -12,10 +12,6 @@ requires "nim >= 2.0.0"
 
 # Tasks
 
-task benchmark, "Run the benchmark":
-  exec "nim c -d:release -d:danger --mm:orc -d:mimalloc benchmark/main.nim"
-  exec "./benchmark/main 18"
-
 from std/os import `/`, quoteShell
 from std/strutils import find
 
@@ -37,15 +33,20 @@ proc editConstants(dir: string) =
       content.insert(dir, first + len(name) + len(" = r\""))
     writeFile(filename, content)
 
-task localInstall, "Install on your local workspace":
-  # Works with atlas
-  let dir = thisDir().quoteShell / "src"
-  editConstants(dir)
-  editConfig(dir)
-
 after install:
   let dir = thisDir().quoteShell
   # Change the constants
   editConstants(dir)
   # Edit mimalloc/config
   editConfig(dir)
+
+task localInstall, "Install on your local workspace":
+  # Works with atlas
+  let dir = thisDir().quoteShell / "src"
+  editConstants(dir)
+  editConfig(dir)
+
+task benchmark, "Run the benchmark":
+  localInstallTask()
+  exec "nim c -d:release -d:danger --mm:orc -d:mimalloc benchmark/main.nim"
+  exec "./benchmark/main 18"
