@@ -16,6 +16,7 @@ To use mimalloc, simply add the following to your project's .nims file:
 
 ```nim
 when defined(useMimalloc):
+  switch("define", "useMalloc")
   {.hint: "Patching malloc.nim to use mimalloc".}
   patchFile("stdlib", "malloc", "$lib/patchedstd/mimalloc")
 ```
