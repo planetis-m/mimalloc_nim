@@ -15,13 +15,7 @@ nimble install mimalloc
 To use mimalloc, simply add the following to your project's .nims file:
 
 ```nim
-var useMimalloc = defined(mimalloc) or defined(mimallocDynamic)
-# Uncomment this to use mimalloc by default
-#useMimalloc = true
-
-if useMimalloc:
-  switch("mm", "orc") # arc
-  switch("define", "useMalloc")
+when defined(useMimalloc):
   {.hint: "Patching malloc.nim to use mimalloc".}
   patchFile("stdlib", "malloc", "$lib/patchedstd/mimalloc")
 ```
