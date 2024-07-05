@@ -15,6 +15,9 @@ nimble install mimalloc
 To use mimalloc, simply add the following to your project's .nims file:
 
 ```nim
+import mimalloc/config
+
+# Alternatively:
 when defined(useMimalloc):
   switch("define", "useMalloc")
   {.hint: "Patching malloc.nim to use mimalloc".}

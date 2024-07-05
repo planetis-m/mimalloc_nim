@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.2.0"
 author        = "Antonis Geralis"
 description   = "A Nim package for using mimalloc with ARC/ORC"
 license       = "MIT"
