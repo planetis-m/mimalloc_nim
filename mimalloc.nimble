@@ -13,38 +13,26 @@ requires "nim >= 2.0.0"
 # Tasks
 
 from std/os import `/`, quoteShell
-from std/strutils import find
+from std/strutils import format
 
-proc editConfig(dir: string) =
-  withDir(dir):
-    let filename = "mimalloc/config.nim"
-    var content = readFile(filename)
-    let name = "patchFile(\"stdlib\", \"malloc\","
-    let first = find(content, name)
-    content.insert(dir, first + len(name) + len(" r\""))
-    writeFile(filename, content)
+proc substituteInFile(filename, replacement: string) =
+  var content = readFile(filename)
+  content = content.format(replacement)
+  writeFile(filename, content)
 
-proc editConstants(dir: string) =
+proc editMimallocConsts(dir: string) =
   withDir(dir):
-    let filename = "patchedstd/mimalloc.nim"
-    var content = readFile(filename)
-    for name in ["mimallocStatic", "mimallocIncludePath"]:
-      let first = find(content, name)
-      content.insert(dir, first + len(name) + len(" = r\""))
-    writeFile(filename, content)
+    substituteInFile("mimalloc/config.nim", dir)
+    substituteInFile("patchedstd/mimalloc.nim", dir)
 
 after install:
   let dir = thisDir().quoteShell
-  # Change the constants
-  editConstants(dir)
-  # Edit mimalloc/config
-  editConfig(dir)
+  editMimallocConsts(dir)
 
 task localInstall, "Install on your local workspace":
   # Works with atlas
   let dir = thisDir().quoteShell / "src"
-  editConstants(dir)
-  editConfig(dir)
+  editMimallocConsts(dir)
 
 task benchmark, "Run the benchmark":
   localInstallTask()
