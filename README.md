@@ -21,10 +21,10 @@ when defined(useMimalloc):
   patchFile("stdlib", "malloc", "$lib/patchedstd/mimalloc")
 ```
 
-Then, compile your project with the `-d:mimalloc` flag:
+Then, compile your project with the `-d:useMimalloc` flag:
 
 ```
-nim c -d:mimalloc your_file.nim
+nim c -d:useMimalloc your_file.nim
 ```
 
 There's also a `-d:mimallocDynamic` flag that makes the program link against mimalloc dynamically.
