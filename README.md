@@ -10,6 +10,10 @@ You can install this package using Nimble:
 nimble install mimalloc
 ```
 
+> [!WARNING]
+> You can only have one version of mimalloc installed on your system at a time.
+> If you install a new version, it will replace the previous one for all projects using mimalloc.
+
 ## Usage
 
 To use mimalloc, simply add the following to your project's .nims file:

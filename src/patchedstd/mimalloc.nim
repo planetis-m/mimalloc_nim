@@ -5,7 +5,7 @@
 when defined(vcc):
   # Specifically for VCC which has different syntax
   {.passC: "/DNDEBUG".}
-  {.passL: "psapi.lib advapi32.lib bcrypt.lib".} # shell32.lib user32.lib
+  {.passL: "psapi.lib advapi32.lib bcrypt.lib".}
 else:
   # Generic GCC-like arguments
   {.passC: "-DNDEBUG -fvisibility=hidden".}
@@ -18,7 +18,7 @@ else:
   # Not sure if we really need those or not, but Mimalloc uses them
   {.passC: "-ftls-model=initial-exec -fno-builtin-malloc".}
   when defined(windows):
-    {.passL: "-lpsapi -ladvapi32 -lbcrypt".} # -lshell32 -luser32
+    {.passL: "-lpsapi -ladvapi32 -lbcrypt".}
   else:
     {.passL: "-pthread -lrt -latomic".}
 

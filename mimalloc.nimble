@@ -2,7 +2,7 @@
 
 version       = "0.2.0"
 author        = "Antonis Geralis"
-description   = "A Nim package for using mimalloc with ARC/ORC"
+description   = "A drop-in solution to use mimalloc in Nim"
 license       = "MIT"
 srcDir        = "src"
 
@@ -20,6 +20,11 @@ from std/os import `/`, quoteShell
 from std/strutils import find
 import std/compilesettings
 
+proc copyMimallocToStdlib() =
+  let stdlibDir = querySetting(libPath)
+  mkDir(stdlibDir / "patchedstd")
+  cpFile("patchedstd/mimalloc.nim", stdlibDir / "patchedstd/mimalloc.nim")
+
 proc editConstants(dir: string) =
   withDir(dir):
     let filename = "patchedstd/mimalloc.nim"
@@ -29,14 +34,13 @@ proc editConstants(dir: string) =
       content.insert(dir, first + len(name) + len(" = r\""))
     writeFile(filename, content)
 
-# before install:
+# task localInstall, "Install on your local workspace":
 #   # Works with atlas
 #   editConstants(thisDir().quoteShell / "src")
+#   copyMimallocToStdlib()
 
 after install:
   # Change the constants
   editConstants(thisDir().quoteShell)
   # Copy mimalloc.nim to the stdlib
-  let stdlibDir = querySetting(libPath)
-  mkDir(stdlibDir / "patchedstd")
-  cpFile("patchedstd/mimalloc.nim", stdlibDir / "patchedstd/mimalloc.nim")
+  copyMimallocToStdlib()
