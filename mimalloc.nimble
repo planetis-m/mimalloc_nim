@@ -12,8 +12,7 @@ requires "nim >= 2.0.0"
 
 # Tasks
 
-from std/os import `/`, quoteShell
-from std/strutils import format
+import std/[os, strutils]
 
 proc substituteInFile(filename, replacement: string) =
   var content = readFile(filename)
@@ -26,15 +25,15 @@ proc editMimallocConsts(dir: string) =
     substituteInFile("patchedstd/mimalloc.nim", dir)
 
 after install:
-  let dir = thisDir().quoteShell
+  let dir = thisDir()
   editMimallocConsts(dir)
 
 task localInstall, "Install on your local workspace":
   # Works with atlas
-  let dir = thisDir().quoteShell / "src"
+  let dir = thisDir() / "src"
   editMimallocConsts(dir)
 
 task benchmark, "Run the benchmark":
-  localInstallTask()
+  # localInstallTask()
   exec "nim c -d:release -d:danger --mm:orc -d:useMimalloc benchmark/main.nim"
   exec "./benchmark/main 18"
