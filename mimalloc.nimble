@@ -26,12 +26,12 @@ proc editMimallocConsts(dir: string) =
     substituteInFile("patchedstd/mimalloc.nim", dir)
 
 after install:
-  let dir = thisDir().quoteShell
+  let dir = thisDir()
   editMimallocConsts(dir)
 
 task localInstall, "Install on your local workspace":
   # Works with atlas
-  let dir = thisDir().quoteShell / "src"
+  let dir = thisDir() / "src"
   editMimallocConsts(dir)
 
 task benchmark, "Run the benchmark":
