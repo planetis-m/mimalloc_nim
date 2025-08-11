@@ -56,8 +56,8 @@ when defined(mimallocDynamic):
   {.passL: "-lmimalloc".}
 else:
   const
-    mimallocStatic = "$1/mimalloc/src/static.c"
-    mimallocIncludePath = "$1/mimalloc/include"
+    mimallocStatic = r"$1/mimalloc/src/static.c"
+    mimallocIncludePath = r"$1/mimalloc/include"
 
   {.passC: "-I" & mimallocIncludePath.}
   {.compile: mimallocStatic.}
