@@ -20,6 +20,21 @@ when defined(mimallocTsan):
   else:
     {.error: "Thread Sanitizer is only supported with Clang compiler".}
 
+# Undefined Behavior Sanitizer support (Clang++ only, Debug build only)
+when defined(mimallocUbsan):
+  # UBSan requires a debug build
+  when defined(debug):
+    when defined(clang):
+      # Enable UBSan tracking
+      {.passC: "-DMI_UBSAN=1".}
+      # Add UBSan compile and link flags
+      {.passC: "-fsanitize=undefined -g -fno-sanitize-recover=undefined".}
+      {.passL: "-fsanitize=undefined".}
+    else:
+      {.error: "Undefined Behavior Sanitizer is only supported with Clang++ compiler".}
+  else:
+    {.error: "Undefined Behavior Sanitizer requires a debug build".}
+
 # Musl libc support
 when defined(mimallocMusl):
   # Enable musl libc support
@@ -31,12 +46,22 @@ when defined(mimallocMusl):
 # shell32 user32 aren't needed for static linking from my testing
 when defined(vcc):
   # Specifically for VCC which has different syntax
-  {.passC: "/DNDEBUG".}
+  # Add debug flag for debug builds, otherwise use release
+  when defined(debug):
+    {.passC: "/DDEBUG".}
+  else:
+    {.passC: "/DNDEBUG".}
+    {.passC: "/DMI_BUILD_RELEASE".}
   {.passL: "psapi.lib advapi32.lib bcrypt.lib".}
 else:
   # Generic GCC-like arguments
-  {.passC: "-DNDEBUG -fvisibility=hidden".}
-  when not defined(cpp):
+  when defined(debug):
+    {.passC: "-DDEBUG -fvisibility=hidden".}
+  else:
+    {.passC: "-DNDEBUG -fvisibility=hidden".}
+    {.passC: "-DMI_BUILD_RELEASE".}
+
+  when not defined(cpp) or not defined(mimallocUbsan):
     {.passC: "-Wstrict-prototypes".}
   when defined(gcc) or defined(clang):
     {.passC: "-Wno-unknown-pragmas".}
@@ -60,7 +85,11 @@ else:
     mimallocIncludePath = r"$1/mimalloc/include"
 
   {.passC: "-I" & mimallocIncludePath.}
-  {.compile: mimallocStatic.}
+  # Compile mimalloc as C++ when using UBSan (matching CMake's MI_USE_CXX behavior)
+  when defined(mimallocUbsan):
+    {.compile(mimallocStatic, "-x c++").}
+  else:
+    {.compile: mimallocStatic.}
 
 {.push stackTrace: off.}
 
