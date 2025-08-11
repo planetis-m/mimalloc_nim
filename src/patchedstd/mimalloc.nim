@@ -1,5 +1,32 @@
-# TODO: include "sanitizer/asan_interface.h" for ASan support
-# set appropriate flags: MI_LIBC_MUSL, MI_TRACK_ASAN, and MI_DEBUG_TSAN (clang only)
+# Address Sanitizer support
+when defined(mimallocAsan):
+  # Enable ASan tracking
+  {.passC: "-DMI_TRACK_ASAN=1".}
+  when defined(clang) or defined(gcc):
+    # Add ASan compile and link flags
+    {.passC: "-fsanitize=address".}
+    {.passL: "-fsanitize=address".}
+  # Note: The mimalloc library will automatically include <sanitizer/asan_interface.h>
+  # when MI_TRACK_ASAN is defined, so we don't need to explicitly include it in Nim
+
+# Thread Sanitizer support (Clang only)
+when defined(mimallocTsan):
+  when defined(clang):
+    # Enable TSan tracking
+    {.passC: "-DMI_TSAN=1".}
+    # Add TSan compile and link flags
+    {.passC: "-fsanitize=thread -g -O1".}
+    {.passL: "-fsanitize=thread".}
+  else:
+    {.error: "Thread Sanitizer is only supported with Clang compiler".}
+
+# Musl libc support
+when defined(mimallocMusl):
+  # Enable musl libc support
+  {.passC: "-DMI_LIBC_MUSL=1".}
+  when defined(clang) or defined(gcc):
+    # Use local-dynamic TLS model for musl
+    {.passC: "-ftls-model=local-dynamic".}
 
 # shell32 user32 aren't needed for static linking from my testing
 when defined(vcc):
@@ -16,7 +43,10 @@ else:
   when defined(clang):
     {.passC: "-Wno-static-in-inline".}
   # Not sure if we really need those or not, but Mimalloc uses them
-  {.passC: "-ftls-model=initial-exec -fno-builtin-malloc".}
+  # Only set TLS model if not using musl (musl sets it above)
+  when not defined(mimallocMusl):
+    {.passC: "-ftls-model=initial-exec".}
+  {.passC: "-fno-builtin-malloc".}
   when defined(windows):
     {.passL: "-lpsapi -ladvapi32 -lbcrypt".}
   else:
@@ -26,8 +56,8 @@ when defined(mimallocDynamic):
   {.passL: "-lmimalloc".}
 else:
   const
-    mimallocStatic = r"$1/mimalloc/src/static.c"
-    mimallocIncludePath = r"$1/mimalloc/include"
+    mimallocStatic = "$1/mimalloc/src/static.c"
+    mimallocIncludePath = "$1/mimalloc/include"
 
   {.passC: "-I" & mimallocIncludePath.}
   {.compile: mimallocStatic.}

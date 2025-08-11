@@ -119,8 +119,8 @@ static void* mi_prim_mem_grow(size_t size, size_t try_alignment) {
 }
 
 // Note: the `try_alignment` is just a hint and the returned pointer is not guaranteed to be aligned.
-int _mi_prim_alloc(size_t size, size_t try_alignment, bool commit, bool allow_large, bool* is_large, bool* is_zero, void** addr) {
-  MI_UNUSED(allow_large); MI_UNUSED(commit);
+int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool commit, bool allow_large, bool* is_large, bool* is_zero, void** addr) {
+  MI_UNUSED(allow_large); MI_UNUSED(commit); MI_UNUSED(hint_addr);
   *is_large = false;
   *is_zero = false;
   *addr = mi_prim_mem_grow(size, try_alignment);
@@ -145,6 +145,11 @@ int _mi_prim_decommit(void* addr, size_t size, bool* needs_recommit) {
 }
 
 int _mi_prim_reset(void* addr, size_t size) {
+  MI_UNUSED(addr); MI_UNUSED(size);
+  return 0;
+}
+
+int _mi_prim_reuse(void* addr, size_t size) {
   MI_UNUSED(addr); MI_UNUSED(size);
   return 0;
 }
@@ -276,4 +281,8 @@ void _mi_prim_thread_done_auto_done(void) {
 
 void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
   MI_UNUSED(heap);
+}
+
+bool _mi_prim_thread_is_in_threadpool(void) {
+  return false;
 }
