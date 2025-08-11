@@ -86,7 +86,8 @@ else:
 
   {.passC: "-I" & mimallocIncludePath.}
   # Compile mimalloc as C++ when using UBSan (matching CMake's MI_USE_CXX behavior)
-  when defined(mimallocUbsan):
+  # force C++ compilation with msvc or clang-cl to use modern C++ atomics
+  when defined(mimallocUbsan) or defined(vcc) or defined(icc) or defined(clangcl):
     {.compile(mimallocStatic, "-x c++").}
   else:
     {.compile: mimallocStatic.}
