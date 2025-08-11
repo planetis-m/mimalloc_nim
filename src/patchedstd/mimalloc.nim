@@ -6,8 +6,6 @@ when defined(mimallocAsan):
     # Add ASan compile and link flags
     {.passC: "-fsanitize=address".}
     {.passL: "-fsanitize=address".}
-  # Note: The mimalloc library will automatically include <sanitizer/asan_interface.h>
-  # when MI_TRACK_ASAN is defined, so we don't need to explicitly include it in Nim
 
 # Thread Sanitizer support (Clang only)
 when defined(mimallocTsan):
