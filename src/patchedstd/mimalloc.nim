@@ -91,7 +91,7 @@ else:
 {.push stackTrace: off.}
 
 type
-  MiStatCount {.bycopy, header: "mimalloc-stats.h", completeStruct.} = object
+  MiStatCount {.importc: "mi_stat_count_t", header: "mimalloc-stats.h", completeStruct, bycopy.} = object
     total: int64    # total allocated over time
     peak: int64     # peak allocation
     current: int64  # current allocation
@@ -99,7 +99,7 @@ type
   # We only need the first part (prefix) of mi_stats_t up to malloc_requested.
   # mi_stats_get copies exactly 'stats_size' bytes, so we define a prefix that
   # matches the initial layout of mi_stats_t in C.
-  MiStatsPrefix {.bycopy header: "mimalloc-stats.h", completeStruct.} = object
+  MiStatsPrefix {.importc: "mi_stats_t", header: "mimalloc-stats.h", completeStruct, bycopy.} = object
     version: cint
     pages: MiStatCount # count of mimalloc pages
     reserved: MiStatCount # reserved memory bytes
@@ -183,8 +183,6 @@ when not defined(gcOrc):
 
 proc GC_setStrategy(strategy: GC_Strategy) = discard
 
-# ---- Internal helper to read current stats safely ----
-
 when defined(debug):
   proc readStats(): MiStatsPrefix =
     var s: MiStatsPrefix
@@ -193,20 +191,17 @@ when defined(debug):
     mi_stats_get(csize_t(sizeof(s)), addr s)
     return s
 
-  proc getOccupiedMem*(): int =
-    ## Returns the number of bytes that are owned by the process and hold data.
+  proc getOccupiedMem(): int =
     let st = readStats()
     let allocated = st.malloc_normal.current + st.malloc_huge.current
     # Cast to Nim int (pointer-sized); beware of overflow on 32-bit if very large.
     result = int(allocated)
 
-  proc getTotalMem*(): int =
-    ## Returns the number of bytes that are owned by the process.
+  proc getTotalMem(): int =
     let st = readStats()
     result = int(st.committed.current)
 
-  proc getFreeMem*(): int =
-    ## Returns the number of bytes that are owned by the process, but do not hold any meaningful data.
+  proc getFreeMem(): int =
     let st = readStats()
     let allocated = st.malloc_normal.current + st.malloc_huge.current
     var freeBytes = st.committed.current - allocated
