@@ -72,8 +72,10 @@ else:
   {.passC: "-fno-builtin-malloc".}
   when defined(windows):
     {.passL: "-lpsapi -ladvapi32 -lbcrypt".}
+  elif defined(linux):
+    {.passL: "-pthread -lrt -latomic".} # or make rt/atomic conditional
   else:
-    {.passL: "-pthread -lrt -latomic".}
+    {.passL: "-pthread".}
 
 const
   mimallocStatic = r"$1/mimalloc/src/static.c"
