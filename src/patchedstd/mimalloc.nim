@@ -82,9 +82,11 @@ const
   mimallocIncludePath = r"$1/mimalloc/include"
 
 {.passC: "-I" & mimallocIncludePath.}
-# Compile mimalloc as C++ when using UBSan (matching CMake's MI_USE_CXX behavior)
-# force C++ compilation with msvc or clang-cl to use modern C++ atomics
-when defined(mimallocUbsan) or defined(vcc) or defined(icc) or defined(clangcl):
+# Compile mimalloc as C++ where required.
+# MSVC uses `/TP` instead of GCC/Clang's `-x c++`.
+when defined(vcc):
+  {.compile(mimallocStatic, "/TP").}
+elif defined(mimallocUbsan) or defined(icc) or defined(clangcl):
   {.compile(mimallocStatic, "-x c++").}
   {.link: "-lstdc++".}
 else:
